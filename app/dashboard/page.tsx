@@ -12,8 +12,13 @@ export default async function DashboardPage() {
         <LogoutButton />
       </div>
       <p>บทบาทของคุณ: <b>{role ?? 'ไม่พบข้อมูล role'}</b></p>
+
+      <Link href="/machines" className="text-blue-600 underline block">
+        รายการเครื่องจักร
+      </Link>
+
       {role === 'admin' && (
-        <Link href="/machines/new" className="text-blue-600 underline">
+        <Link href="/machines/new" className="text-blue-600 underline block">
           เพิ่มเครื่องจักร
         </Link>
       )}
