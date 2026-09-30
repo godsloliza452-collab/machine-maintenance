@@ -20,6 +20,10 @@ export default async function DashboardPage() {
       <Link href="/alarms" className="text-blue-600 underline block">
         รายการ Alarm
       </Link>
+      
+      <Link href="/maintenance" className="text-blue-600 underline block">
+        การซ่อมบำรุง
+      </Link>
 
       {role === 'admin' && (
         <>
