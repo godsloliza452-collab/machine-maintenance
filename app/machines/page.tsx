@@ -43,6 +43,7 @@ export default async function MachinesPage({
           <option value="">ทุกสถานะ</option>
           <option value="Running">Running</option>
           <option value="Stopped">Stopped</option>
+          <option value="Alarm">Alarm</option>
           <option value="Maintenance">Maintenance</option>
         </select>
         <button className="bg-blue-600 text-white rounded px-4">ค้นหา</button>

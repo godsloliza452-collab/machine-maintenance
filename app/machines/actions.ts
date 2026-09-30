@@ -1,31 +1,30 @@
 'use server'
+
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { machineSchema, type MachineInput } from '@/lib/validations/machine'
 
-type Result = { error?: string }
-
-function toMessage(error: { code?: string }) {
-  return error.code === '23505'
-    ? 'รหัสเครื่องจักรนี้มีอยู่แล้ว'
-    : 'บันทึกไม่สำเร็จ (สิทธิ์ไม่พอหรือข้อมูลไม่ถูกต้อง)'
-}
-
-export async function createMachine(values: MachineInput): Promise<Result> {
+export async function createMachine(values: MachineInput): Promise<{ error?: string }> {
   const parsed = machineSchema.safeParse(values)
-  if (!parsed.success) return { error: 'ข้อมูลไม่ถูกต้อง' }
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   const supabase = await createClient()
   const { error } = await supabase.from('machines').insert(parsed.data)
-  if (error) return { error: toMessage(error) }
+  if (error) {
+    if (error.code === '23505') return { error: 'รหัสเครื่องจักรนี้มีอยู่แล้ว' }
+    return { error: 'ไม่สามารถบันทึกได้ (ต้องเป็น admin)' }
+  }
 
   revalidatePath('/machines')
   return {}
 }
 
-export async function updateMachine(id: string, values: MachineInput): Promise<Result> {
+export async function updateMachine(
+  id: string,
+  values: MachineInput
+): Promise<{ error?: string }> {
   const parsed = machineSchema.safeParse(values)
-  if (!parsed.success) return { error: 'ข้อมูลไม่ถูกต้อง' }
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -33,16 +32,21 @@ export async function updateMachine(id: string, values: MachineInput): Promise<R
     .update(parsed.data)
     .eq('id', id)
     .select('id')
-  if (error) return { error: toMessage(error) }
-  // RLS ที่ปฏิเสธการแก้ไขจะไม่ส่ง error แต่ไม่มีแถวถูกแก้
-  if (!data || data.length === 0) return { error: 'ไม่มีสิทธิ์แก้ไขหรือไม่พบเครื่องจักร' }
+  if (error) {
+    if (error.code === '23505') return { error: 'รหัสเครื่องจักรนี้มีอยู่แล้ว' }
+    return { error: 'ไม่สามารถแก้ไขได้' }
+  }
+  if (!data || data.length === 0) return { error: 'ไม่สามารถแก้ไขได้ (ต้องเป็น admin)' }
 
   revalidatePath('/machines')
   return {}
 }
 
 export async function deleteMachine(formData: FormData) {
+  const id = String(formData.get('id') ?? '')
+  if (!id) return
+
   const supabase = await createClient()
-  await supabase.from('machines').delete().eq('id', String(formData.get('id')))
+  await supabase.from('machines').delete().eq('id', id)
   revalidatePath('/machines')
 }

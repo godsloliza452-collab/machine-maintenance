@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const STATUSES = ['Running', 'Stopped', 'Maintenance'] as const
+export const STATUSES = ['Running', 'Stopped', 'Alarm', 'Maintenance'] as const
 
 export const machineSchema = z.object({
   machine_id: z
