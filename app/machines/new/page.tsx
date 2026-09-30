@@ -1,9 +1,19 @@
-<td className="flex gap-3 py-2">
-  <Link href={`/machines/${m.id}/edit`} className="text-blue-600 underline">
-    แก้ไข
-  </Link>
-  <form action={deleteMachine}>
-    <input type="hidden" name="id" value={m.id} />
-    <button className="text-red-600 underline">ลบ</button>
-  </form>
-</td>
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getRole } from '@/lib/getRole'
+import MachineForm from '@/components/MachineForm'
+
+export default async function NewMachinePage() {
+  const role = await getRole()
+  if (role !== 'admin') redirect('/machines')
+
+  return (
+    <main className="mx-auto max-w-xl p-6">
+      <Link href="/machines" className="text-sm text-blue-600 hover:underline">
+        &larr; กลับไปรายการเครื่องจักร
+      </Link>
+      <h1 className="mb-4 mt-2 text-2xl font-bold">เพิ่มเครื่องจักร</h1>
+      <MachineForm />
+    </main>
+  )
+}

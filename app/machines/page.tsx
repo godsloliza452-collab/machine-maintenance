@@ -69,10 +69,15 @@ export default async function MachinesPage({
               <td>{m.status}</td>
               {role === 'admin' && (
                 <td>
-                  <form action={deleteMachine}>
-                    <input type="hidden" name="id" value={m.id} />
-                    <button className="text-red-600 underline">ลบ</button>
-                  </form>
+                  <div className="flex gap-3">
+                    <Link href={`/machines/${m.id}/edit`} className="text-blue-600 underline">
+                      แก้ไข
+                    </Link>
+                    <form action={deleteMachine}>
+                      <input type="hidden" name="id" value={m.id} />
+                      <button className="text-red-600 underline">ลบ</button>
+                    </form>
+                  </div>
                 </td>
               )}
             </tr>
