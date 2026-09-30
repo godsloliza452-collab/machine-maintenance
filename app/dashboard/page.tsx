@@ -17,10 +17,19 @@ export default async function DashboardPage() {
         รายการเครื่องจักร
       </Link>
 
+      <Link href="/alarms" className="text-blue-600 underline block">
+        รายการ Alarm
+      </Link>
+
       {role === 'admin' && (
-        <Link href="/machines/new" className="text-blue-600 underline block">
-          เพิ่มเครื่องจักร
-        </Link>
+        <>
+          <Link href="/machines/new" className="text-blue-600 underline block">
+            เพิ่มเครื่องจักร
+          </Link>
+          <Link href="/alarms/new" className="text-blue-600 underline block">
+            เพิ่ม Alarm
+          </Link>
+        </>
       )}
     </main>
   )
